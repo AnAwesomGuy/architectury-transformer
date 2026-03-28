@@ -77,7 +77,8 @@ public class TransformForgeEnvironment implements TinyRemapperTransformer {
                 srg = TinyMappingFactory.loadWithDetection(reader);
             }
         }
-        
+
+        if (System.getProperty(BuiltinProperties.MIXIN_MAPPINGS) == null) return providers;
         for (String path : System.getProperty(BuiltinProperties.MIXIN_MAPPINGS).split(File.pathSeparator)) {
             File mixinMapFile = Paths.get(path).toFile();
             if (mixinMapFile.exists()) {

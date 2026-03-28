@@ -41,6 +41,7 @@ public class RemapMixinVariables implements TinyRemapperTransformer {
     @Override
     public List<IMappingProvider> collectMappings() throws Exception {
         List<IMappingProvider> providers = new ArrayList<>();
+        if (System.getProperty(BuiltinProperties.MIXIN_MAPPINGS) == null) return providers;
         for (String path : System.getProperty(BuiltinProperties.MIXIN_MAPPINGS).split(File.pathSeparator)) {
             File mixinMapFile = Paths.get(path).toFile();
             if (mixinMapFile.exists()) {
