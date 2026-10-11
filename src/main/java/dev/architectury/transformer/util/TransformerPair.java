@@ -23,7 +23,6 @@
 
 package dev.architectury.transformer.util;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.JsonObject;
 import dev.architectury.transformer.Transformer;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +49,7 @@ public class TransformerPair {
     public Transformer construct() {
         try {
             Transformer transformer = clazz.getConstructor().newInstance();
-            transformer.supplyProperties(MoreObjects.firstNonNull(properties, new JsonObject()));
+            transformer.supplyProperties(ObjectUtils.nonNullElse(properties, JsonObject::new));
             return transformer;
         } catch (Throwable e) {
             throw new RuntimeException(e);

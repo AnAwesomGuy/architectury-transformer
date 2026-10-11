@@ -23,11 +23,25 @@
 
 package dev.architectury.transformer.util;
 
-import com.google.common.hash.Hashing;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class HashUtils {
-    @SuppressWarnings("UnstableApiUsage")
+    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
+
     public static String sha256(byte[] bytes) {
-        return Hashing.sha256().hashBytes(bytes).toString();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(bytes);
+            assert hashBytes.length == 32;
+
+            // convert to hex
+            StringBuilder hashBuilder = new StringBuilder(2 * hashBytes.length);
+            for (byte b : hashBytes)
+                hashBuilder.append(HEX_DIGITS[(b >> 4) & 0xf]).append(HEX_DIGITS[b & 0xf]);
+            return hashBuilder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -23,8 +23,6 @@
 
 package dev.architectury.transformer.transformers;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import dev.architectury.transformer.input.FileAccess;
 import dev.architectury.transformer.transformers.base.AssetEditTransformer;
@@ -36,12 +34,17 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static dev.architectury.transformer.transformers.RemapInjectables.getUniqueIdentifier;
+import static dev.architectury.transformer.util.ObjectUtils.nonNullElse;
 
 public class TransformExpectPlatform implements AssetEditTransformer, ClassEditTransformer {
     private String platformPackage = null;
@@ -58,7 +61,7 @@ public class TransformExpectPlatform implements AssetEditTransformer, ClassEditT
     @Override
     public void doEdit(TransformerContext context, FileAccess output) throws Exception {
         if (!RemapInjectables.isInjectInjectables()) return;
-        String className = MoreObjects.firstNonNull(uniqueIdentifier, getUniqueIdentifier()) + "/PlatformMethods";
+        String className = nonNullElse(uniqueIdentifier, RemapInjectables::getUniqueIdentifier) + "/PlatformMethods";
         output.addClass(className, buildPlatformMethodClass(className));
     }
     
@@ -71,7 +74,7 @@ public class TransformExpectPlatform implements AssetEditTransformer, ClassEditT
          * }
          */
         String platform = System.getProperty(BuiltinProperties.PLATFORM_NAME);
-        Preconditions.checkNotNull(platform, BuiltinProperties.PLATFORM_NAME + " is not present!");
+        Objects.requireNonNull(platform, BuiltinProperties.PLATFORM_NAME + " is not present!");
         
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         writer.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL, className, null, "java/lang/Object", null);
@@ -95,9 +98,9 @@ public class TransformExpectPlatform implements AssetEditTransformer, ClassEditT
             if (method.visibleAnnotations != null && method.visibleAnnotations.stream().anyMatch(it -> Objects.equals(it.desc, RemapInjectables.EXPECT_PLATFORM_LEGACY))) {
                 platformMethodsClass = "me/shedaniel/architectury/PlatformMethods";
             } else if (method.invisibleAnnotations != null && method.invisibleAnnotations.stream().anyMatch(it -> Objects.equals(it.desc, RemapInjectables.EXPECT_PLATFORM))) {
-                platformMethodsClass = MoreObjects.firstNonNull(uniqueIdentifier, getUniqueIdentifier()) + "/PlatformMethods";
+                platformMethodsClass = nonNullElse(uniqueIdentifier, RemapInjectables::getUniqueIdentifier) + "/PlatformMethods";
             } else if (method.invisibleAnnotations != null && method.invisibleAnnotations.stream().anyMatch(it -> Objects.equals(it.desc, RemapInjectables.EXPECT_PLATFORM_LEGACY2))) {
-                platformMethodsClass = MoreObjects.firstNonNull(uniqueIdentifier, getUniqueIdentifier()) + "/PlatformMethods";
+                platformMethodsClass = nonNullElse(uniqueIdentifier, RemapInjectables::getUniqueIdentifier) + "/PlatformMethods";
             }
             
             if (platformMethodsClass != null) {
@@ -135,7 +138,7 @@ public class TransformExpectPlatform implements AssetEditTransformer, ClassEditT
         }
         if (platform == null) {
             platform = System.getProperty(BuiltinProperties.PLATFORM_NAME);
-            Preconditions.checkNotNull(platform, BuiltinProperties.PLATFORM_NAME + " is not present!");
+            Objects.requireNonNull(platform, BuiltinProperties.PLATFORM_NAME + " is not present!");
             if (platform.equals("quilt")) platform = "fabric";
         }
         

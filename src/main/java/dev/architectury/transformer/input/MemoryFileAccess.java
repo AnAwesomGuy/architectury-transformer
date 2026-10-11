@@ -23,13 +23,14 @@
 
 package dev.architectury.transformer.input;
 
-import com.google.common.io.ByteStreams;
 import dev.architectury.transformer.Transform;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -51,6 +52,17 @@ public class MemoryFileAccess extends BaseFileAccess {
     public static MemoryFileAccess of(Map<String, byte[]> data) throws IOException {
         return new MemoryFileAccess(data);
     }
+
+    private static byte[] readAllBytes(InputStream is) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int amountRead;
+        byte[] data = new byte[16384];
+        while ((amountRead = is.read(data, 0, data.length)) != -1)
+            buffer.write(data, 0, amountRead);
+
+        return buffer.toByteArray();
+    }
     
     public static MemoryFileAccess ofZipFile(byte[] data) throws IOException {
         MemoryFileAccess anInterface = MemoryFileAccess.of();
@@ -58,7 +70,7 @@ public class MemoryFileAccess extends BaseFileAccess {
             ZipEntry e;
             while ((e = zis.getNextEntry()) != null) {
                 if (!Transform.trimSlashes(e.getName()).isEmpty()) {
-                    anInterface.addFile(e.getName(), ByteStreams.toByteArray(zis));
+                    anInterface.addFile(e.getName(), readAllBytes(zis));
                 }
             }
         }

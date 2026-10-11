@@ -61,7 +61,6 @@ dependencies {
     implementation "org.ow2.asm:asm-commons:$asmVersion"
     implementation "org.ow2.asm:asm-tree:$asmVersion"
     implementation "org.ow2.asm:asm-util:$asmVersion"
-    implementation "com.google.guava:guava:29.0-jre"
     implementation("com.google.code.gson:gson:2.14.0") {
         exclude group: 'org.checkerframework', module: 'checker-qual'
         exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
@@ -125,7 +124,6 @@ shadowJar {
     relocate "net.fabricmc", "dev.architectury.transformer.shadowed.impl.net.fabricmc"
     relocate "org.objectweb", "dev.architectury.transformer.shadowed.impl.org.objectweb"
     relocate "com.google", "dev.architectury.transformer.shadowed.impl.com.google"
-    relocate "javax.annotation", "dev.architectury.transformer.shadowed.impl.javax.annotation"
     relocate "dev.architectury.tinyremapper", "dev.architectury.transformer.shadowed.impl.dev.architectury.tinyremapper"
     relocate "dev.architectury.refmapremapper", "dev.architectury.transformer.shadowed.impl.dev.architectury.refmapremapper"
     configurations = [project.configurations.runtimeClasspath]

@@ -23,9 +23,9 @@
 
 package dev.architectury.transformer.handler;
 
-import com.google.common.base.MoreObjects;
 import dev.architectury.transformer.input.FileAccess;
 import dev.architectury.transformer.transformers.classpath.ReadClasspathProvider;
+import dev.architectury.transformer.util.ObjectUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -95,9 +95,8 @@ public class TransformerClassWriter extends ClassWriter {
     
     private static ClassEntry get(ReadClasspathProvider classpath, ClassLoader classLoader, FileAccess output, byte[] bytes) {
         ClassReader reader = new ClassReader(bytes);
-        return new StoredClassEntry(classpath, classLoader, output, reader.getClassName(), MoreObjects.firstNonNull(reader.getSuperName(), "java/lang/Object"), (reader.getAccess() & Opcodes.ACC_INTERFACE) != 0);
+        return new StoredClassEntry(classpath, classLoader, output, reader.getClassName(), ObjectUtils.firstNonNull(reader.getSuperName(), "java/lang/Object"), (reader.getAccess() & Opcodes.ACC_INTERFACE) != 0);
     }
-    
     
     interface ClassEntry {
         String getName();

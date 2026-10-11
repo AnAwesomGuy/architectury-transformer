@@ -23,9 +23,9 @@
 
 package dev.architectury.transformer.transformers;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.JsonObject;
 import dev.architectury.transformer.transformers.base.ClassEditTransformer;
+import dev.architectury.transformer.util.ObjectUtils;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
@@ -55,7 +55,7 @@ public class RemapInjectables implements ClassEditTransformer {
     @Override
     public ClassNode doEdit(String name, ClassNode node) {
         if (!isInjectInjectables()) return node; // no need to edit the class
-        String newName = MoreObjects.firstNonNull(uniqueIdentifier, getUniqueIdentifier()) + "/PlatformMethods";
+        String newName = ObjectUtils.nonNullElse(uniqueIdentifier, RemapInjectables::getUniqueIdentifier) + "/PlatformMethods";
         ClassNode newNode = new ClassNode();
         Remapper remapper = new Remapper() {
             @Override
